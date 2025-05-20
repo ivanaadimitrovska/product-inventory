@@ -1,0 +1,112 @@
+<div class="container">
+  <div class="header">
+    <h1>{{ isEditMode ? 'Edit' : 'Create' }} Product</h1>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        id="name"
+        formControlName="name"
+        class="form-control"
+        [class.is-invalid]="productForm.get('name')?.invalid && productForm.get('name')?.touched"
+      />
+      <div class="error-message" *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched">
+        {{ getErrorMessage('name') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        class="form-control"
+        [class.is-invalid]="productForm.get('description')?.invalid && productForm.get('description')?.touched"
+      ></textarea>
+      <div class="error-message" *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched">
+        {{ getErrorMessage('description') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input
+        type="number"
+        id="price"
+        formControlName="price"
+        class="form-control"
+        [class.is-invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched"
+      />
+      <div class="error-message" *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched">
+        {{ getErrorMessage('price') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="quantityInStock">Quantity in Stock</label>
+      <input
+        type="number"
+        id="quantityInStock"
+        formControlName="quantityInStock"
+        class="form-control"
+        [class.is-invalid]="productForm.get('quantityInStock')?.invalid && productForm.get('quantityInStock')?.touched"
+      />
+      <div class="error-message" *ngIf="productForm.get('quantityInStock')?.invalid && productForm.get('quantityInStock')?.touched">
+        {{ getErrorMessage('quantityInStock') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category</label>
+      <input
+        type="text"
+        id="category"
+        formControlName="category"
+        class="form-control"
+        [class.is-invalid]="productForm.get('category')?.invalid && productForm.get('category')?.touched"
+      />
+      <div class="error-message" *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched">
+        {{ getErrorMessage('category') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="image">Product Image</label>
+      <input
+        type="file"
+        id="image"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        class="form-control"
+      />
+      <div class="image-preview" *ngIf="imagePreview">
+        <img [src]="imagePreview" alt="Product preview" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="productForm.invalid || loading"
+      >
+        {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="router.navigate(['/products'])"
+        [disabled]="loading"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
