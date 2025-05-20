@@ -1,0 +1,6 @@
+com\example\productinventory\config\FileUploadConfig.class
+com\example\productinventory\service\ProductService.class
+com\example\productinventory\ProductInventoryApplication.class
+com\example\productinventory\model\Product.class
+com\example\productinventory\repository\ProductRepository.class
+com\example\productinventory\controller\ProductController.class
