@@ -49,10 +49,11 @@ export class ProductListComponent implements OnInit {
     this.error = null;
     
     this.productService.getProducts().subscribe({
-      next: (data) => {
-        this.products = data;
-        this.filteredProducts = data;
-        this.totalItems = data.length;
+      next: (response) => {
+        this.products = response.content;
+        this.filteredProducts = response.content;
+        this.totalItems = response.totalElements;
+        this.pageSize = response.size;
         this.loading = false;
       },
       error: (error) => {

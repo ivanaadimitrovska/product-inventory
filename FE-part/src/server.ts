@@ -4,14 +4,15 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import path from 'path';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-const browserDistFolder = resolve(serverDistFolder, '../browser');
+const browserDistFolder = resolve(process.cwd(), 'dist/product-inventory-frontend/browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
@@ -26,29 +27,23 @@ app.use(bodyParser.json());
 let products = [
   {
     id: 1,
-    name: 'Laptop',
-    description: 'High-performance laptop',
-    price: 999.99,
+    name: 'Product 1',
+    description: 'Description 1',
+    price: 99.99,
     quantityInStock: 10,
-    category: 'Electronics'
+    category: 'Electronics',
+    imageUrl: 'https://via.placeholder.com/150'
   },
-  {
-    id: 2,
-    name: 'Smartphone',
-    description: 'Latest model smartphone',
-    price: 699.99,
-    quantityInStock: 15,
-    category: 'Electronics'
-  }
+  // Add more mock products as needed
 ];
 
 // Product API endpoints
-app.get('/api/products', (req, res) => {
+app.get('/api/products', (req: Request, res: Response) => {
   res.json(products);
 });
 
-app.get('/api/products/:id', (req, res) => {
-  const product = products.find(p => p.id === Number(req.params.id));
+app.get('/api/products/:id', (req: Request, res: Response) => {
+  const product = products.find(p => p.id === parseInt(req.params.id));
   if (product) {
     res.json(product);
   } else {
@@ -56,7 +51,7 @@ app.get('/api/products/:id', (req, res) => {
   }
 });
 
-app.post('/api/products', (req, res) => {
+app.post('/api/products', (req: Request, res: Response) => {
   const newProduct = {
     id: products.length + 1,
     ...req.body
@@ -65,26 +60,50 @@ app.post('/api/products', (req, res) => {
   res.status(201).json(newProduct);
 });
 
-app.put('/api/products/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const index = products.findIndex(p => p.id === id);
+app.put('/api/products/:id', (req: Request, res: Response) => {
+  const index = products.findIndex(p => p.id === parseInt(req.params.id));
   if (index !== -1) {
-    products[index] = { ...products[index], ...req.body };
+    products[index] = {
+      ...products[index],
+      ...req.body,
+      id: parseInt(req.params.id)
+    };
     res.json(products[index]);
   } else {
     res.status(404).json({ message: 'Product not found' });
   }
 });
 
-app.delete('/api/products/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const index = products.findIndex(p => p.id === id);
+app.delete('/api/products/:id', (req: Request, res: Response) => {
+  const index = products.findIndex(p => p.id === parseInt(req.params.id));
   if (index !== -1) {
-    products = products.filter(p => p.id !== id);
+    products = products.filter(p => p.id !== parseInt(req.params.id));
     res.status(204).send();
   } else {
     res.status(404).json({ message: 'Product not found' });
   }
+});
+
+// Stats endpoint
+app.get('/api/stats', (req: Request, res: Response) => {
+  const stats = {
+    totalProducts: products.length,
+    totalValue: products.reduce((sum, p) => sum + p.price * p.quantityInStock, 0),
+    lowStockProducts: products.filter(p => p.quantityInStock < 5).length,
+    categoryDistribution: Object.entries(
+      products.reduce((acc, p) => {
+        acc[p.category] = (acc[p.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ).map(([category, count]) => ({ category, count })),
+    monthlySales: [
+      { month: 'Jan', value: 1500 },
+      { month: 'Feb', value: 2000 },
+      { month: 'Mar', value: 1800 },
+      // Add more months as needed
+    ]
+  };
+  res.json(stats);
 });
 
 /**
@@ -101,13 +120,12 @@ app.use(
 /**
  * Handle all other requests by rendering the Angular application.
  */
-app.get('*', (req, res, next) => {
-  angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
-    .catch(next);
+app.get('*', (req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith('/api')) {
+    next();
+  } else {
+    res.sendFile(path.join(browserDistFolder, 'index.html'));
+  }
 });
 
 /**
