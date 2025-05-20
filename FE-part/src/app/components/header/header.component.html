@@ -1,0 +1,14 @@
+<header [class.dark-theme]="isDarkMode">
+  <div class="container">
+    <nav>
+      <a routerLink="/" class="logo">Product Inventory</a>
+      <div class="nav-links">
+        <a routerLink="/products">Products</a>
+        <a routerLink="/stats">Statistics</a>
+        <button class="theme-toggle" (click)="toggleTheme()">
+          {{ isDarkMode ? '🌞' : '🌙' }}
+        </button>
+      </div>
+    </nav>
+  </div>
+</header> 

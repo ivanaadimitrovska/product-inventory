@@ -1,1 +1,81 @@
 /* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #dddddd;
+  --hover-color: #f8f9fa;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode {
+  --background-color: #1a1a1a;
+  --text-color: #ffffff;
+  --border-color: #404040;
+  --hover-color: #2d2d2d;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode overrides for common elements */
+.dark-mode {
+  .table {
+    color: var(--text-color);
+    th {
+      background-color: var(--hover-color);
+    }
+    tr:hover {
+      background-color: var(--hover-color);
+    }
+  }
+
+  .btn-primary {
+    background-color: #0d6efd;
+    &:hover {
+      background-color: #0b5ed7;
+    }
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    &:hover {
+      background-color: #5c636a;
+    }
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    &:hover {
+      background-color: #bb2d3b;
+    }
+  }
+
+  .search-input {
+    background-color: var(--hover-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+    &:focus {
+      border-color: #0d6efd;
+    }
+  }
+
+  .pagination-container {
+    background-color: var(--hover-color);
+    border-color: var(--border-color);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+}
